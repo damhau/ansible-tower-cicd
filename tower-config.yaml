@@ -1,0 +1,52 @@
+---
+#  Copyright (c) 2018 Red Hat, Inc.
+#
+#  This file is part of ansible-tower-cicd.
+#
+#  ansible-tower-cicd is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  ansible-tower-cicd is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with ansible-tower-cicd.  If not, see <http://www.gnu.org/licenses/>.
+
+- name: Configure resources for Tower
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    #- name: Configure tower-cli
+    #  become: yes
+    #  ini_file:
+    #    path: /etc/tower/tower_cli.cfg
+    #    section: general
+    #    option: "{{ item.key }}"
+    #    value: "{{ item.value }}"
+    #    owner: root
+    #    group: root
+    #    mode: 0600
+    #  with_dict: "{{ tower_setup_cli_config }}"
+    #  tags:
+    #    - tower-cli
+    
+     #   - name: Configure ldap settings
+     # uri:
+     #     url: http://localhost/api/v2/settings/all/
+     #     body: 
+     #       name: Admin Internal Application
+     #       description: 'For use by secure services & clients. '
+     #       client_type: confidential
+     #       redirect_uris: ''
+     #       authorization_grant_type: password
+     #       skip_authorization: false
+     #       organization: 1
+
+
+    - name: Include tower-config role
+      include_role:
+        name: tower-config

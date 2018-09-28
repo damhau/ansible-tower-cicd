@@ -16,14 +16,27 @@
 #  You should have received a copy of the GNU General Public License
 #  along with ansible-tower-cicd.  If not, see <http://www.gnu.org/licenses/>.
 
-- name: Configure Tower organizations
-  tower_organization:
-    name: "{{ item.name }}"
-    description: "{{ item.description | default(omit) }}"
-    state: "{{ item.state | default(omit) }}"
-    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
-  no_log: "{{ tower_config_no_log }}"
-  with_items: "{{ tower_config_organizations }}"
+
+- name: Configure ldap settings
+  uri:
+      url: http://localhost/api/v2/settings/all/
+      body: "{{ lookup('template','ldap.json.j2')}}"
+      user: admin
+      password: password
+      force_basic_auth: yes
+      body_format: json
+      method: PATCH
+      validate_certs: no # not required. If C(no), SSL certificates will not be validated.  This should only set to C(no) used on personally controlled sites using self-signed certificates.  Prior to 1.9.2 the code defaulted to C(no).
+          
+
+#- name: Configure Tower organizations
+#  tower_organization:
+#    name: "{{ item.name }}"
+#    description: "{{ item.description | default(omit) }}"
+#    state: "{{ item.state | default(omit) }}"
+#    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
+#  no_log: "{{ tower_config_no_log }}"
+#  with_items: "{{ tower_config_organizations }}"
 
 - name: Configure Tower teams
   tower_team:
@@ -34,25 +47,25 @@
   no_log: "{{ tower_config_no_log }}"
   with_items: "{{ tower_config_teams }}"
 
-- name: Configure Tower users
-  tower_user:
-    username: "{{ item.username }}"
-    password: "{{ item.password }}"
-    email: "{{ item.email }}"
-    first_name: "{{ item.first_name }}"
-    last_name: "{{ item.last_name }}"
-    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
-  no_log: "{{ tower_config_no_log }}"
-  with_items: "{{ tower_config_users }}"
+#- name: Configure Tower users
+#  tower_user:
+#    username: "{{ item.username }}"
+#    password: "{{ item.password }}"
+#    email: "{{ item.email }}"
+#    first_name: "{{ item.first_name }}"
+#    last_name: "{{ item.last_name }}"
+#    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
+#  no_log: "{{ tower_config_no_log }}"
+#  with_items: "{{ tower_config_users }}"
 
-- name: Configure Tower roles
-  tower_role:
-    user: "{{ item.user }}"
-    target_team: "{{ item.target_team }}"
-    role: "{{ item.role }}"
-    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
-  no_log: "{{ tower_config_no_log }}"
-  with_items: "{{ tower_config_roles }}"
+#- name: Configure Tower roles
+#  tower_role:
+#    user: "{{ item.user }}"
+#    target_team: "{{ item.target_team }}"
+#    role: "{{ item.role }}"
+#    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
+#  no_log: "{{ tower_config_no_log }}"
+#  with_items: "{{ tower_config_roles }}"
 
 - name: Configure Tower credentials
   tower_credential:
@@ -84,70 +97,70 @@
   no_log: "{{ tower_config_no_log }}"
   with_items: "{{ tower_config_projects }}"
 
-- name: Configure Tower inventories
-  tower_inventory:
-    name: "{{ item.name }}"
-    organization: "{{ item.organization }}"
-    description: "{{ item.description | default(omit) }}"
-    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
-  no_log: "{{ tower_config_no_log }}"
-  with_items: "{{ tower_config_inventories }}"
+#- name: Configure Tower inventories
+#  tower_inventory:
+#    name: "{{ item.name }}"
+#    organization: "{{ item.organization }}"
+#    description: "{{ item.description | default(omit) }}"
+#    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
+#  no_log: "{{ tower_config_no_log }}"
+#  with_items: "{{ tower_config_inventories }}"
 
 # The configuration of inventory sources and job templates relies on the
 # default project by default.
 # We might need to wait a bit for the project to be ready.
-- name: Configure Tower inventory sources
-  tower_inventory_source:
-    name: "{{ item.name }}"
-    description: "{{ item.description | default(omit) }}"
-    inventory: "{{ item.inventory }}"
-    source: "{{ item.source }}"
-    source_project: "{{ item.source_project | default(omit) }}"
-    source_path: "{{ item.source_path | default(omit) }}"
-    update_on_project_update: "{{ item.update_on_project_update | default(omit) }}"
-    overwrite_vars: "{{ item.overwrite_vars | default(omit) }}"
-    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
-  no_log: "{{ tower_config_no_log }}"
-  with_items: "{{ tower_config_inventory_sources }}"
-  retries: 5
-  delay: 5
-  register: sources
-  until: sources is successful
+#- name: Configure Tower inventory sources
+#  tower_inventory_source:
+#    name: "{{ item.name }}"
+#    description: "{{ item.description | default(omit) }}"
+#    inventory: "{{ item.inventory }}"
+#    source: "{{ item.source }}"
+#    source_project: "{{ item.source_project | default(omit) }}"
+#    source_path: "{{ item.source_path | default(omit) }}"
+#    update_on_project_update: "{{ item.update_on_project_update | default(omit) }}"
+#    overwrite_vars: "{{ item.overwrite_vars | default(omit) }}"
+#    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
+#  no_log: "{{ tower_config_no_log }}"
+#  with_items: "{{ tower_config_inventory_sources }}"
+#  retries: 5
+#  delay: 5
+#  register: sources
+#  until: sources is successful
 
 # TODO: Set up all credentials https://github.com/ansible/ansible/issues/43234
 # Meanwhile, the self-tower credential needs to be added manually.
-- name: Configure Tower job templates
-  tower_job_template:
-    name: "{{ item.name }}"
-    description: "{{ item.description | default(omit) }}"
-    job_type: "{{ item.job_type }}"
-    inventory: "{{ item.inventory }}"
-    project: "{{ item.project }}"
-    playbook: "{{ item.playbook }}"
-    credential: "{{ item.credential }}"
-    become_enabled: "{{ item.become_enabled | default(omit) }}"
-    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
-  no_log: "{{ tower_config_no_log }}"
-  with_items: "{{ tower_config_job_templates }}"
-  retries: 5
-  delay: 5
-  register: templates
-  until: templates is successful
-
-- name: Configure Tower schedules
-  tower_schedule:
-    name: "{{ item.name }}"
-    description: "{{ item.description | default(omit) }}"
-    state: "{{ item.state | default(omit) }}"
-    project: "{{ item.project | default(omit) }}"
-    job_template: "{{ item.job_template | default(omit) }}"
-    inventory_source: "{{ item.inventory_source | default(omit) }}"
-    frequency: "{{ item.frequency | default(omit) }}"
-    frequency_unit: "{{ item.frequency_unit | default(omit) }}"
-    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
-  no_log: "{{ tower_config_no_log }}"
-  with_items: "{{ tower_config_schedules }}"
-  retries: 5
-  delay: 5
-  register: schedules
-  until: schedules is successful
+#- name: Configure Tower job templates
+#  tower_job_template:
+#    name: "{{ item.name }}"
+#    description: "{{ item.description | default(omit) }}"
+#    job_type: "{{ item.job_type }}"
+#    inventory: "{{ item.inventory }}"
+#    project: "{{ item.project }}"
+#    playbook: "{{ item.playbook }}"
+#    credential: "{{ item.credential }}"
+#    become_enabled: "{{ item.become_enabled | default(omit) }}"
+#    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
+#  no_log: "{{ tower_config_no_log }}"
+#  with_items: "{{ tower_config_job_templates }}"
+#  retries: 5
+#  delay: 5
+#  register: templates
+#  until: templates is successful
+#
+#- name: Configure Tower schedules
+#  tower_schedule:
+#    name: "{{ item.name }}"
+#    description: "{{ item.description | default(omit) }}"
+#    state: "{{ item.state | default(omit) }}"
+#    project: "{{ item.project | default(omit) }}"
+#    job_template: "{{ item.job_template | default(omit) }}"
+#    inventory_source: "{{ item.inventory_source | default(omit) }}"
+#    frequency: "{{ item.frequency | default(omit) }}"
+#    frequency_unit: "{{ item.frequency_unit | default(omit) }}"
+#    tower_verify_ssl: "{{ tower_config_verify_ssl }}"
+#  no_log: "{{ tower_config_no_log }}"
+#  with_items: "{{ tower_config_schedules }}"
+#  retries: 5
+#  delay: 5
+#  register: schedules
+#  until: schedules is successful

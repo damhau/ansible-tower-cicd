@@ -24,45 +24,57 @@ tower_config_no_log: True
 # Ansible Tower modules
 tower_config_verify_ssl: False
 
-tower_config_organizations:
-  - name: default-organization
-    description: default organization description
-    state: present
+#tower_config_organizations:
+#  - name: Default
+#    description: default organization description
+#    state: present
 
 tower_config_teams:
-  - name: default-team
-    description: default team description
-    organization: default-organization
+  - name: 'ISS Web'
+    description: 'ISS Web Team'
+    organization: 'Default'
+    users_cn: 'cn=Group for ISS Web,ou=groups,dc=example,dc=com'
+    admins_cn: 'cn=Admin Group for ISS Web,ou=groups,dc=example,dc=com'
+  - name: ICT System
+    description: ICT System Team
+    organization: Default
+    users_cn: 'cn=Group for ICT System,ou=groups,dc=example,dc=com'
+    admins_cn:
+  - name: ICT Monitoring
+    description: ICT Monitoring Team
+    organization: Default
+    users_cn: 'cn=Group for ICT Monitoring,ou=groups,dc=example,dc=com'
+    admins_cn:
 
-tower_config_users:
-  - username: default-user
-    password: password
-    email: user@example.org
-    first_name: default
-    last_name: user
+#tower_config_users:
+#  - username: default-user
+#    password: password
+#    email: user@example.org
+#    first_name: default
+#    last_name: user
 
-tower_config_roles:
-  - user: default-user
-    target_team: default-team
-    role: admin
+#tower_config_roles:
+#  - user: default-user
+#    target_team: default-team
+#    role: admin
 
 tower_config_credentials:
   - name: noop
     description: noop credential (i.e, running against localhost)
-    organization: default-organization
+    organization: Default
     kind: ssh
   - name: self-tower
     description: Credentials for Tower itself
-    organization: default-organization
+    organization: Default
     kind: tower
     username: admin
-    password: password
+    password: password1
     host: "https://localhost"
 
 tower_config_projects:
   - name: ansible-tower-cicd
     description: Repository for infrastructure management
-    organization: default-organization
+    organization: Default
     scm_type: git
     scm_clean: true
     scm_url: https://github.com/dmsimard/ansible-tower-cicd
@@ -70,7 +82,7 @@ tower_config_projects:
 tower_config_inventories:
   - name: default-inventory
     description: Default inventory
-    organization: default-organization
+    organization: Default
 
 tower_config_inventory_sources:
   - name: default-inventory-source

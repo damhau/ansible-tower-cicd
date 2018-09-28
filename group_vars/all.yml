@@ -1,0 +1,12 @@
+tower_setup_cli_config:
+  host: "http://localhost"
+  username: "admin"
+  password: "password"
+  verify_ssl: false
+  use_token: false
+  verbose: false
+  certificate:
+  format: human
+  color: true
+  description_on:
+  oauth_token:
